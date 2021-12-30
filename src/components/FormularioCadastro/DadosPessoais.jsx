@@ -1,29 +1,15 @@
 import React, { useContext, useState } from "react";
 import { TextField, Button, Switch, FormControlLabel, Box } from "@material-ui/core";
 import validacoesCadastro from "../../context/validacoesCadastro";
-
+import useErros from "../../hooks/useErros"
 function DadosPessoais({ aoEnviar, anterior }) {
   const [nome, setNome] = useState("");
   const [sobrenome, setSobrenome] = useState("");
   const [cpf, setCpf] = useState("");
   const [promocoes, setPromocoes] = useState(true);
   const [novidades, setNovidades] = useState(false);
-  const [erros, setErros] = useState({ cpf: { valido: true, texto: "" } });
   const validacao = useContext(validacoesCadastro)
-  const validarCampo = (event) => {
-    const { name, value } = event.target;
-    const novoEstado = { ...erros };
-    novoEstado[name] = validacao[name](value);
-    setErros(novoEstado);
-  };
-  const validarEnvio = () => {
-    for(let campo in erros){
-      if(!erros[campo].valido){
-        return false
-      }
-    }
-    return true
-  }
+  const [erros, validarCampos,validarEnvio] = useErros(validacao);
   return (
     <form
       onSubmit={(event) => {
@@ -64,7 +50,7 @@ function DadosPessoais({ aoEnviar, anterior }) {
         onChange={(event) => {
           setCpf(event.target.value);
         }}
-        onBlur={validarCampo}
+        onBlur={validarCampos}
         error={!erros.cpf.valido}
         helperText={erros.cpf.texto}
         id="CPF"
